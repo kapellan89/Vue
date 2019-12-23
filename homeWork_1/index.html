@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: rgb(200, 230, 200);
+        font-family: 'Raleway', sans-serif;
+    }
+    .container {
+        max-width: 1000px;
+        width: auto;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+    header {
+        background-color: rgb(230, 230, 230);
+        text-align: center;
+        font-size: 2rem;
+        height: 50px;
+        height: 50px;
+        padding-top: 0.5rem;
+        border-bottom: 3px solid rgba(0, 0, 0, 0.377);
+    }
+    #info {
+        max-width: 450px;
+        width: auto; 
+        display: flex;
+        flex-direction: column;
+        float: right;  
+    }
+   
+    img {
+        width: 500px;
+        height: 300px;
+        border: 3px solid rgba(0, 0, 0, 0.123);
+    }
+    </style>
+    <title>Helm</title>
+</head>
+
+<body>
+
+<!-- 1. Реализовать красивую страничку с выводом информации о товаре (например, страничка 
+о выводе информации о ноутбуке в интернет 
+магазине компьютерной техники);  -->
+   
+
+     <div id="app">
+        <header>
+            {{head}}
+        </header>
+        <div class="container">
+
+            <div id="info">
+                <h3 v-text="product.title"></h3>
+                <h2> Модель: {{product.model}}</h2>
+                <p> Описание: <br> {{product.description}}</p>
+                <p>Стоимость: {{product.price}}$</p>
+            </div>
+            <div id="img">
+                <img v-bind:src="product.img">
+            </div>
+        </div>
+    </div> 
+
+    <script>
+    new Vue ({
+    el: '#app',
+    data: {
+        head: 'Reevu MSX1 - шлем с зеркалом заднего вида',
+        product: {
+            model: 'Reevu MSX1',
+            img: "https://i.pinimg.com/originals/24/a3/78/24a378fd76af191dff10f823c31d5701.jpg",
+            description: 'Reevu MSX1 является первым в мире мотоциклетным шлемом, имеющим полноценное встроенное зеркало заднего вида, такое же, как в обычных автомобилях. Причем для отображения того, что творится на дороге позади вас, не используется электроника и видеокамеры, а применяется специальная запатентованная система зеркал, выводящая изображение прямо на козырек шлема, то есть у того, кто наденет такой шлем, будет полноценный круговой обзор всего, что происходит на дороге.' ,
+            price: 380
+        }
+    }
+});
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .contain {
+            max-width: 1200px;
+            width: auto;
+            margin: 0 auto;
+        }
+        header {
+            background-color: green;
+        }
+        nav {
+            display: flex;
+            color: #ffffff;
+            justify-content: space-between;
+        }
+        
+        #photo {
+            margin-top: 2rem;
+            width: 400px;
+        }
+        #photo img {
+            height: 250px;
+            width: 250px;
+            border-radius: 50%;
+        }
+        #style {
+            width: 800px;
+            display: flex;
+            margin: 0 auto;
+        }
+        #info {
+            width: 300px;
+            color: black;
+        }
+        span {
+            font-size: 1.2rem;
+            color: #036bf1;
+        }
+    </style>
+</head>
+
+<body>
+
+ <!--  2. Реализовать страничку с выводом информации о пользователя сайта (например, имя, фамилия, 
+login, email, картинку аватара, и т.п.)
+ -->
+
+    <div id="app">
+        <header>
+                <nav class="contain">
+                    <h1>{{head.title}}</h1>
+                </nav>
+        </header>
+
+        <div class="contain">
+            <div id="style">
+                <div id="photo">
+                    <img v-bind:src="profile.img">
+                </div>
+
+                <div id="info">
+                    <h3><span>Имя: </span>{{profile.name}}</h3>
+                    <p> <span>Фамилия: </span> {{profile.surname}}</p>
+                    <p> <span>Возраст: </span> {{profile.age}}</p>
+                    <p><span>Email: </span> {{profile.email}}</p>
+                    <p><span>Учится в:</span> {{profile.studes}}</p>
+                    <p> <span>Увлечения:</span> <br> {{profile.hobby}}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                head: {
+                    title: "Страничка информации",
+                },
+                profile: {
+                    img: "https://upload.wikimedia.org/wikipedia/commons/9/97/Anonim.png",
+                    name: "Иван",
+                    surname: "Иванов",
+                    age: 37,
+                    email: 'somemail@gmail.com',
+                    studes: 'ИТМО',
+                    hobby: 'Катание на сноуборде, Вождение мотоцикла, Игра на флейте',
+                }
+            }
+        })
+    </script>
+
+
+</body>
+
+</html>
