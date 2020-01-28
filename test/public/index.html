@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/homeTechnic.js"></script>
+</head>
+    <body>
+        <div id="app">
+            <vue-container></vue-container>
+        </div>    
+    <script>
+// Хранилище
+        const store = new Vuex.Store({
+            state:{
+                sitename: 'Агрегатор интернет ресурсов',
+                showDrawer: false,
+                products:[],
+                technics:[]
+            },
+            mutations:{
+                showDrawerChange(state){
+                    state.showDrawer=!state.showDrawer
+                },
+                addProducts(state, arrProducts){
+                    for(let i = 0; i < arrProducts.length; i++){
+                        state.products.push(arrProducts[i]);
+                    }
+                },
+                addTechnics(state, arrTechnics){
+                    for(let i = 0; i < arrTechnics.length; i++){
+                        state.technics.push(arrTechnics[i]);
+                    }
+                },
+            },
+            actions:{
+                loadData({commit}){
+                    commit('addProducts', window.products),
+                    commit('addTechnics', window.technics)
+                }
+            }
+        });
+        store.dispatch('loadData');
+
+// Шапка сайта
+    
+        const Head = {
+            template: `<v-app-bar
+                            clipped-left
+                            app
+                            collapse-on-scroll
+                            color="yellow">
+                                <v-app-bar-nav-icon 
+                                    @click="showDrawerChange">               
+                                </v-app-bar-nav-icon>
+                                <v-toolbar-title
+                                    class-text="yellow darken-1"
+                                    >
+                                    {{this.$store.state.sitename}}
+                                </v-toolbar-title>
+                            </v-app-bar>`,
+            methods:{
+                showDrawerChange: function(){
+                        this.$store.commit('showDrawerChange');
+                    }
+            },
+        };
+        
+// Отдельные товары в разделе
+        
+        const Product = {
+                template: `
+                <v-col cols="12" sm="4">
+                <v-card class="mx-auto">
+                                    <v-img v-bind:src="product.image" v-on:click="overlay =!overlay "> 
+                                        <v-card-title>{{product.title}}</v-card-title>
+                                    </v-img>
+                                    <v-overlay
+                                            @mouseout="overlay = !overlay"
+                                            absolute
+                                            opacity="0.5"
+                                            :value="overlay"
+                                            z-index="20"
+                                            @click="overlay = false"
+                                            >                            
+                                            <v-btn link :to="{name:'productcard', params:{id:product.id}}"
+                                                color="white" outlined                             
+                                            >
+                                                Подробнее
+                                            </v-btn>
+                                            <v-btn icon
+                                                color="error"
+                                                @click="overlay = false"
+                                            >
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>                            
+                                        </v-overlay>
+                            <v-card-text>Компания владелец: {{product.author}}</v-card-text>
+                            <v-btn v-bind:href="product.link">Ссылка на сайт</v-btn><br>
+                            <span>Оценка пользователей:  </span><span v-for="(n, index) in 5" v-bind:key="index">{{checkRating(n, product)}}</span>
+                        
+                </v-card>
+                </v-col>`,
+                props:['product'],
+                computed:{
+                    ...Vuex.mapState(['products'])
+                },
+                methods:{
+                    checkRating: function(n, product){
+                        return (product.rating - n >= 0)? String.fromCharCode(9733): String.fromCharCode(9734);
+                    },            
+                },
+                data: function(){
+                    return {
+                        overlay: false
+                    }
+                },
+        };
+        
+//Подробное описание каждого сайта раздела электроника
+        
+        const ProductCard = {
+                template: `<v-content app><v-row>
+                    <v-col cols="12" md="4" class="d-flex justify-center">
+                        <v-img class="flex-grow-0 elevation-2"
+                            v-bind:src="'/' + product.image"
+                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)""
+                        >                        
+                        </v-img>
+                    </v-col>
+                    <v-col cols="12" md="8" app>
+                        <h1 class="ma-2" v-text="product.title"></h1>
+                        <v-rating
+                            dense
+                            v-model="product.rating"
+                            background-color="orange lighten-3"
+                            color="orange"                                        
+                            readonly
+                            class="ma-2"
+                        ></v-rating>
+                        <p class="ma-2" v-html="product.description"><p>
+                        <p class="ma-2">Компания вледелец: {{product.author}}</p>
+                        <v-btn
+                            v-bind:href="product.link"
+                            class="ma-2" outlined 
+                            color="deep-purple darken-4"
+                        >Ссылка на сайт</v-btn>
+                    </v-col>
+                </v-row>
+                </v-content>`,
+                props:['id'],
+                computed:{
+                    ...Vuex.mapState(['products']),
+                    product: function(){
+                        let id = this.id;
+                        let arr = this.products.filter(function(prod){
+                            return prod.id === id;
+                        });
+                        return arr[0];
+                    },
+                }
+        };
+        
+// Раздел Электроники
+
+        const Electronic={
+            template:`
+            <v-content
+                app
+                style="background: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,0,0,1))"
+                >
+                <v-container fluid>
+                    <v-row no-gutters>
+                            <product v-for="product in products"
+                                :key="product.id"
+                                :product = "product"></product>
+                    </v-row>
+                </v-container>
+            </v-content>`,
+            computed: {
+                ...Vuex.mapState(['products']),
+            },
+            components: {
+                'product': Product
+            }
+        };
+        
+// Описание каждого сайта в разделе Бытовой техники
+        
+        const HomeTechnic = {
+                template: `
+                <v-col cols="12" sm="4">
+                <v-card class="mx-auto">
+                                    <v-img v-bind:src="technic.image" v-on:click="overlay =!overlay "> 
+                                        <v-card-title>{{technic.title}}</v-card-title>
+                                    </v-img>
+                                    <v-overlay
+                                            @mouseout="overlay = !overlay"
+                                            absolute
+                                            opacity="0.5"
+                                            :value="overlay"
+                                            z-index="20"
+                                            @click="overlay = false"
+                                            >                            
+                                            <v-btn link :to="{name:'techniccard', params:{id:technic.id}}"
+                                                color="white" outlined                             
+                                            >
+                                                Подробнее
+                                            </v-btn>
+                                            <v-btn icon
+                                                color="error"
+                                                @click="overlay = false"
+                                            >
+                                                <v-icon>mdi-close</v-icon>
+                                            </v-btn>                            
+                                        </v-overlay>
+                            <v-card-text>Компания владелец: {{technic.author}}</v-card-text>
+                            <v-btn v-bind:href="technic.link">Ссылка на сайт</v-btn><br>
+                            <span>Оценка пользователей:  </span><span v-for="(n, index) in 5" v-bind:key="index">{{checkRating(n, technic)}}</span>
+                        
+                </v-card>
+                </v-col>`,
+                props:['technic'],
+                computed:{
+                    ...Vuex.mapState(['technics'])
+                },
+                methods:{
+                    checkRating: function(n, technic){
+                        return (technic.rating - n >= 0)? String.fromCharCode(9733): String.fromCharCode(9734);
+                    },            
+                },
+                data: function(){
+                    return {
+                        overlay: false
+                    }
+                },
+        };
+        const TechnicCard = {
+                template: `<v-content app><v-row>
+                    <v-col cols="12" md="4" class="d-flex justify-center">
+                        <v-img class="flex-grow-0 elevation-2"
+                            v-bind:src="'/' + technic.image"
+                            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)""
+                        >                        
+                        </v-img>
+                    </v-col>
+                    <v-col cols="12" md="8" app>
+                        <h1 class="ma-2" v-text="technic.title"></h1>
+                        <v-rating
+                            dense
+                            v-model="technic.rating"
+                            background-color="orange lighten-3"
+                            color="orange"                                        
+                            readonly
+                            class="ma-2"
+                        ></v-rating>
+                        <p class="ma-2" v-html="technic.description"><p>
+                        <p class="ma-2">Компания вледелец: {{technic.author}}</p>
+                        <v-btn
+                            v-bind:href="technic.link"
+                            class="ma-2" outlined 
+                            color="deep-purple darken-4"
+                        >Ссылка на сайт</v-btn>
+                    </v-col>
+                </v-row>
+                </v-content>`,
+                props:['id'],
+                computed:{
+                    ...Vuex.mapState(['technics']),
+                    technic: function(){
+                        let id = this.id;
+                        let arr = this.technics.filter(function(tech){
+                            return tech.id === id;
+                        });
+                        return arr[0];
+                    },
+                }
+        };
+        
+// Раздел Бытовой техники
+        
+        const HomeGoods={
+            template:
+            `<v-content
+                app
+                style="background: linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,1))"
+                >
+                <v-container fluid>
+                        <v-row no-gutters>
+                            <technic v-for="technic in technics"
+                                :key="technic.id"
+                                :technic = "technic"></technic>
+                    </v-row>
+                </v-container>
+            </v-content>`,
+            computed: {
+                ...Vuex.mapState(['technics']),
+            },
+            components: {
+                'technic': HomeTechnic
+            }
+        };
+
+// Выпадающее меню
+
+        const Menu={
+            data: function () {
+                return {tabs: [{
+                            rus:'Электроника',
+                            eng: 'electronic'                            
+                        },
+                        {
+                            rus:'Бытовая Техника',
+                            eng: 'homeGoods'                            
+                        }
+                    ],
+                        currentTab:'Электроника'};
+            },
+            template: `<v-navigation-drawer
+                v-model="this.showDrawer"
+                clipped
+                app
+                style="background: linear-gradient(to bottom, #fefcea, #f1da36);"
+                >
+                    <v-list dense>
+                        <v-subheader class="title justify-center">Разделы</v-subheader>
+                        <v-list-item 
+                            v-for="tab in tabs"
+                            @click="currentTab = tab.eng"
+                            :key="tab.eng"
+                            :tab = "tab.eng"
+                            link :to="{name:tab.eng}"
+                            >
+                            <v-list-item-icon>
+                            <v-icon></v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content >
+                                {{tab.rus}}                    
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list>
+                </v-navigation-drawer>`,
+            computed:{
+                    ...Vuex.mapState(['showDrawer']),
+                    currentTabComponent(){
+                    return 'tab-' + this.currentTab;
+                    }
+            },
+        };
+
+
+        const Container= {
+                template: `<v-app>
+                                <section-header></section-header>
+                                <draw-menu></draw-menu>
+                                <router-view></router-view>
+                            </v-app>`,
+                components:{
+                    'section-header': Head,
+                    'draw-menu': Menu,
+                    'electronic-section':Electronic,
+                    'home-section':HomeGoods,
+                    
+                }
+        };
+    
+        const routes = [
+            { path: '/electronic', component:Electronic, name:'electronic'},
+            { path: '/homeGoods', component: HomeGoods, name:'homeGoods' },
+            { path: '/electronic/:id/', component: ProductCard, name:'productcard', props:true},
+            { path: '/homeGoods/:id/', component: TechnicCard, name:'techniccard', props:true},
+        
+        ];
+        const router = new VueRouter({
+            mode:'history',
+            routes: routes
+        });
+        
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            store,
+            router: router,
+            components:{
+                'vue-container': Container,
+            },
+            computed:{
+            ...Vuex.mapState(['sitename']),
+            },
+            methods:{
+              showDrawerChange(){
+                  store.commit('showDrawerChange')
+                },
+            },
+        });
+
+    </script>
+</body>
+</html>

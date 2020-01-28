@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Doc</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <h1 v-text='content.title'></h1>
+        <p v-text='content.shortContent'></p>
+        <p v-text='content.fullContent' v-if='content.visible'></p>
+        <button v-show='!content.visible' v-on:click="content.visible=!content.visible">Подробнее</button>
+    </div>
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                content: {
+                    title: 'Краткое описание',
+                    shortContent: 'Это укороченная версия контента полная откроется при нажатии на кнопку.',
+                    fullContent: ' А это полная версия контента которая при нажатии на кнопку становится видимой.',
+                    visible: false,
+                }
+            }
+        })
+    </script>
+</body>
